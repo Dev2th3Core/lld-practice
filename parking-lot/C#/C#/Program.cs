@@ -21,6 +21,22 @@ namespace C_
             userService.AddVehicleToUser(user2.UserId, vehicle2);
 
             userService.DisplayAllUsers();
+
+            var parkingLotService = new ParkingLotService();
+
+            var lot = parkingLotService.AddParkingLot("City Center Lot", "Downtown");
+
+            var level1 = parkingLotService.AddParkingLevelToLot(lot.LotId);
+            var level2 = parkingLotService.AddParkingLevelToLot(lot.LotId);
+
+            var spot1 = parkingLotService.AddParkingSpotToLevel(lot.LotId, level1.LevelId, VehicleType.CAR);
+            var spot2 = parkingLotService.AddParkingSpotToLevel(lot.LotId, level1.LevelId, VehicleType.VAN);
+            var spot3 = parkingLotService.AddParkingSpotToLevel(lot.LotId, level2.LevelId, VehicleType.BIKE);
+
+            var availableSpots = parkingLotService.GetAvailableSpots(lot.LotId, VehicleType.CAR);
+            Console.WriteLine($"\nAvailable Car Spots: {availableSpots.Count}");
+
+            parkingLotService.DisplayLotStatus(lot.LotId);
         }
     }
 }

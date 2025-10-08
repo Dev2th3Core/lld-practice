@@ -11,7 +11,6 @@ namespace C_.Services
         {
             var user = new User
             {
-                UserId = Guid.NewGuid(),
                 Name = name,
             };
 
@@ -25,7 +24,8 @@ namespace C_.Services
             var user = users.FirstOrDefault(u => u.UserId == userId);
             if(user is null)
             {
-                throw new Exception("User not found");
+                Console.WriteLine("User not found!");
+                return null;
             }
             return user;
         }
@@ -47,17 +47,18 @@ namespace C_.Services
             return false;
         }
 
-        public void AddVehicleToUser(Guid userId, Vehicle vehicle)
+        public Vehicle AddVehicleToUser(Guid userId, Vehicle vehicle)
         {
             var user = GetUserById(userId);
             if (user == null)
             {
-                Console.WriteLine("User not found!");
-                return;
+                Console.WriteLine("User lot not found!");
+                return null;
             }
 
             user.Vehicles.Add(vehicle);
             Console.WriteLine($"Vehicle {vehicle.LicensePlate} added to {user.Name}");
+            return vehicle;
         }
 
         public void DisplayAllUsers()

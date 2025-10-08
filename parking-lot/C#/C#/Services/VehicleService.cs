@@ -11,7 +11,6 @@ namespace C_.Services
         {
             var vehicle = new Vehicle
             {
-                VehicleId = Guid.NewGuid(),
                 Type = vehicleType,
                 LicensePlate = licensePlate
             };
@@ -24,7 +23,11 @@ namespace C_.Services
         public Vehicle GetVehicleById(Guid vehicleId)
         {
             var vehicle = vehicles.FirstOrDefault(v => v.VehicleId == vehicleId);
-            if (vehicle is null) throw new Exception("Vehicle not found");
+            if (vehicle is null)
+            {
+                Console.WriteLine("Vehicle lot not found!");
+                return null;
+            }
             return vehicle;
         }
 
