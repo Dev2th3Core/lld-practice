@@ -5,7 +5,7 @@ namespace C_.Services
 {
     class ParkingLotService
     {
-        private readonly List<ParkingLot> parkingLots = new List<ParkingLot>();
+        private readonly List<ParkingLot> _parkingLots = new();
 
         public ParkingLot AddParkingLot(string name, string address)
         {
@@ -15,14 +15,20 @@ namespace C_.Services
                 Name = name,
                 Address = address
             };
-            parkingLots.Add(lot);
+            _parkingLots.Add(lot);
             Console.WriteLine($"Created Parking Lot: {lot.Name} ({lot.LotId}) at {lot.Address}");
+            return lot;
+        }
+
+        public ParkingLot GetParkingLotById(Guid lotId)
+        {
+            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
             return lot;
         }
 
         public ParkingLevel AddParkingLevelToLot(Guid lotId)
         {
-            var lot = parkingLots.FirstOrDefault(l => l.LotId == lotId);
+            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
             if (lot == null)
             {
                 Console.WriteLine("Parking lot not found!");
@@ -36,7 +42,7 @@ namespace C_.Services
 
         public ParkingSpot AddParkingSpotToLevel(Guid lotId, Guid levelId, VehicleType type)
         {
-            var lot = parkingLots.FirstOrDefault(l => l.LotId == lotId);
+            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
             var level = lot?.Levels.FirstOrDefault(lv => lv.LevelId == levelId);
 
             if (level == null)
@@ -56,9 +62,33 @@ namespace C_.Services
             return spot;
         }
 
+        public ParkingSpot GetSpotById(Guid lotId, Guid levelId, Guid spotId)
+        {
+            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
+            if(lot == null)
+            {
+                Console.WriteLine("Parking Lot not Found");
+                return null;
+            }
+            var level = lot?.Levels.FirstOrDefault(lv => lv.LevelId == levelId);
+            if(level == null)
+            {
+                Console.WriteLine("Parking Level not Found");
+                return null;
+            }
+            var spot = level.Spots.FirstOrDefault(s => s.SpotId == spotId);
+            if(spot == null)
+            {
+                Console.WriteLine("Parking Spot not Found");
+                return null;
+            }
+            return spot;
+        }
+
+
         public List<(ParkingLevel Level, ParkingSpot Spot)> GetAvailableSpots(Guid lotId, VehicleType type)
         {
-            var lot = parkingLots.FirstOrDefault(l => l.LotId == lotId);
+            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
             if (lot == null)
             {
                 Console.WriteLine("Parking lot not found!");
@@ -78,7 +108,7 @@ namespace C_.Services
 
         public void DisplayLotStatus(Guid lotId)
         {
-            var lot = parkingLots.FirstOrDefault(l => l.LotId == lotId);
+            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
             if(lot == null)
             {
                 Console.WriteLine("Not Lot Found");
