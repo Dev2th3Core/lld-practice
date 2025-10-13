@@ -5,7 +5,7 @@ namespace C_.Services
 {
     class VehicleService
     {
-        private readonly List<Vehicle> vehicles = new List<Vehicle>();
+        private readonly List<Vehicle> _vehicles = new();
 
         public Vehicle AddVehicle(VehicleType vehicleType, string licensePlate)
         {
@@ -15,14 +15,14 @@ namespace C_.Services
                 LicensePlate = licensePlate
             };
 
-            vehicles.Add(vehicle);
+            _vehicles.Add(vehicle);
             Console.WriteLine($"Vehicle created: {vehicle.Type} (ID: {vehicle.VehicleId}, License: {vehicle.LicensePlate})");
             return vehicle;
         }
 
         public Vehicle GetVehicleById(Guid vehicleId)
         {
-            var vehicle = vehicles.FirstOrDefault(v => v.VehicleId == vehicleId);
+            var vehicle = _vehicles.FirstOrDefault(v => v.VehicleId == vehicleId);
             if (vehicle is null)
             {
                 Console.WriteLine("Vehicle lot not found!");
@@ -33,7 +33,7 @@ namespace C_.Services
 
         public List<Vehicle> GetAllVehicles()
         {
-            return vehicles;
+            return _vehicles;
         }
 
         public bool DeleteVehicle(Guid vehicleId)
@@ -51,7 +51,7 @@ namespace C_.Services
         {
             Console.WriteLine("\n--- Registered Vehicles ---");
             
-            foreach (var v in vehicles)
+            foreach (var v in _vehicles)
                 Console.WriteLine($"{v.Type}: {v.LicensePlate}");
         }
     }

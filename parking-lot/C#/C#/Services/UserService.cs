@@ -5,7 +5,7 @@ namespace C_.Services
 {
     class UserService
     {
-        private readonly List<User> users = new List<User>();
+        private readonly List<User> _users = new();
 
         public User AddUser(string name)
         {
@@ -14,14 +14,14 @@ namespace C_.Services
                 Name = name,
             };
 
-            users.Add(user);
+            _users.Add(user);
             Console.WriteLine($"User created: {user.Name} (ID: {user.UserId})");
             return user;
         }
 
         public User GetUserById(Guid userId)
         {
-            var user = users.FirstOrDefault(u => u.UserId == userId);
+            var user = _users.FirstOrDefault(u => u.UserId == userId);
             if(user is null)
             {
                 Console.WriteLine("User not found!");
@@ -32,7 +32,7 @@ namespace C_.Services
 
         public List<User> GetAllUsers()
         {
-            return users;
+            return _users;
         }
 
         public bool DeleteUser(Guid userId)
@@ -40,7 +40,7 @@ namespace C_.Services
             var user = GetUserById(userId);
             if (user != null)
             {
-                users.Remove(user);
+                _users.Remove(user);
                 Console.WriteLine($"User deleted: {user.Name}");
                 return true;
             }
@@ -64,7 +64,7 @@ namespace C_.Services
         public void DisplayAllUsers()
         {
             Console.WriteLine("\n--- Registered Users ---");
-            foreach (var user in users)
+            foreach (var user in _users)
             {
                 Console.WriteLine($"ID: {user.UserId}, Name: {user.Name}");
                 if (user.Vehicles.Any())
