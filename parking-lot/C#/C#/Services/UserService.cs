@@ -3,10 +3,18 @@ using System.Xml.Linq;
 
 namespace C_.Services
 {
+    /// <summary>
+    /// Service for managing users and their vehicles.
+    /// </summary>
     class UserService
     {
         private readonly List<User> _users = new();
 
+        /// <summary>
+        /// Adds a new user to the system.
+        /// </summary>
+        /// <param name="name">The name of the user.</param>
+        /// <returns>The newly created <see cref="User"/>.</returns>
         public User AddUser(string name)
         {
             var user = new User
@@ -19,6 +27,11 @@ namespace C_.Services
             return user;
         }
 
+        /// <summary>
+        /// Retrieves a user by their unique identifier.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>The <see cref="User"/> if found; otherwise, null.</returns>
         public User GetUserById(Guid userId)
         {
             var user = _users.FirstOrDefault(u => u.UserId == userId);
@@ -30,11 +43,20 @@ namespace C_.Services
             return user;
         }
 
+        /// <summary>
+        /// Gets a list of all registered users.
+        /// </summary>
+        /// <returns>A list of all <see cref="User"/>s.</returns>
         public List<User> GetAllUsers()
         {
             return _users;
         }
 
+        /// <summary>
+        /// Deletes a user from the system.
+        /// </summary>
+        /// <param name="userId">The ID of the user to delete.</param>
+        /// <returns>True if the user was deleted; otherwise, false.</returns>
         public bool DeleteUser(Guid userId)
         {
             var user = GetUserById(userId);
@@ -47,6 +69,12 @@ namespace C_.Services
             return false;
         }
 
+        /// <summary>
+        /// Associates a vehicle with a user.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="vehicle">The <see cref="Vehicle"/> to add to the user.</param>
+        /// <returns>The added <see cref="Vehicle"/> if the user is found; otherwise, null.</returns>
         public Vehicle AddVehicleToUser(Guid userId, Vehicle vehicle)
         {
             var user = GetUserById(userId);
@@ -61,6 +89,9 @@ namespace C_.Services
             return vehicle;
         }
 
+        /// <summary>
+        /// Displays all registered users and their vehicles to the console.
+        /// </summary>
         public void DisplayAllUsers()
         {
             Console.WriteLine("\n--- Registered Users ---");

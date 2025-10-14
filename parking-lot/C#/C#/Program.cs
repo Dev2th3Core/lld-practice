@@ -4,8 +4,15 @@ using C_.Services;
 
 namespace C_
 {
+    /// <summary>
+    /// The main entry point for the parking lot simulation application.
+    /// </summary>
     internal class Program
     {
+        /// <summary>
+        /// Main method to run the parking lot simulation.
+        /// </summary>
+        /// <param name="args">Command line arguments.</param>
         static void Main(string[] args)
         {
             var userService = new UserService();
@@ -54,15 +61,24 @@ namespace C_
             var reservationService = new ReservationService(parkingLotService);
 
             Console.WriteLine("\n--- Reserving Spot for Bob's Car ---");
-            var reservation = reservationService.AutoAssignNearestSpot(
-                lot.LotId, vehicle2.VehicleId, VehicleType.CAR, northEntrance
-            );
+            //var reservation = reservationService.AutoAssignNearestSpot(
+            //    lot.LotId, vehicle2.VehicleId, VehicleType.CAR, northEntrance
+            //);
 
-            if (reservation != null)
+            // Run two threads trying to reserve at the same time
+            var t1 = Task.Run(() =>
             {
-                Console.WriteLine("\n--- Freeing Spot ---");
-                reservationService.FreeSpot(reservation);
-            }
+                reservationService.AutoAssignNearestSpot(lot.LotId, vehicle1.VehicleId, vehicle1.Type, northEntrance);
+            });
+            var t2 = Task.Run(() =>
+            {
+                reservationService.AutoAssignNearestSpot(lot.LotId, vehicle2.VehicleId, vehicle2.Type, northEntrance);
+            });
+
+            Task.WaitAll(t1, t2);
+
+            Console.WriteLine("\n--- Freeing Spot ---");
+            //reservationService.FreeSpot(reservation);
 
             Console.WriteLine("\nSimulation Complete.");
         }
