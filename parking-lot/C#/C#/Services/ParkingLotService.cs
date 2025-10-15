@@ -37,7 +37,11 @@ namespace C_.Services
         public ParkingLot GetParkingLotById(Guid lotId)
         {
             var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
-            return lot;
+            if (lot == null)
+            {
+                throw new KeyNotFoundException($"Parking lot with ID {lotId} not found.");
+            }
+            return lot; 
         }
 
         /// <summary>
@@ -47,12 +51,7 @@ namespace C_.Services
         /// <returns>The newly created <see cref="ParkingLevel"/> if the lot is found; otherwise, null.</returns>
         public ParkingLevel AddParkingLevelToLot(Guid lotId)
         {
-            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
-            if (lot == null)
-            {
-                Console.WriteLine("Parking lot not found!");
-                return null;
-            }
+            var lot = GetParkingLotById(lotId); // Re-use the getter which now has validation
             var lotLevel = new ParkingLevel();
             lot.Levels.Add(lotLevel);
             Console.WriteLine($"Added Level {lotLevel.LevelId} to Lot {lot.Name}");
@@ -68,13 +67,12 @@ namespace C_.Services
         /// <returns>The newly created <see cref="ParkingSpot"/> if the level is found; otherwise, null.</returns>
         public ParkingSpot AddParkingSpotToLevel(Guid lotId, Guid levelId, VehicleType type)
         {
-            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
-            var level = lot?.Levels.FirstOrDefault(lv => lv.LevelId == levelId);
+            var lot = GetParkingLotById(lotId);
+            var level = lot.Levels.FirstOrDefault(lv => lv.LevelId == levelId);
 
             if (level == null)
             {
-                Console.WriteLine("❌ Level not found!");
-                return null;
+                throw new KeyNotFoundException($"Parking level with ID {levelId} not found in lot {lotId}.");
             }
 
             var spot = new ParkingSpot
@@ -98,24 +96,19 @@ namespace C_.Services
         /// <returns>The <see cref="ParkingSpot"/> if found; otherwise, null.</returns>
         public ParkingSpot GetSpotById(Guid lotId, Guid levelId, Guid spotId)
         {
-            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
-            if(lot == null)
-            {
-                Console.WriteLine("Parking Lot not Found");
-                return null;
-            }
-            var level = lot?.Levels.FirstOrDefault(lv => lv.LevelId == levelId);
+            var lot = GetParkingLotById(lotId);
+            var level = lot.Levels.FirstOrDefault(lv => lv.LevelId == levelId);
             if(level == null)
             {
-                Console.WriteLine("Parking Level not Found");
-                return null;
+                throw new KeyNotFoundException($"Parking level with ID {levelId} not found in lot {lotId}.");
             }
+
             var spot = level.Spots.FirstOrDefault(s => s.SpotId == spotId);
             if(spot == null)
             {
-                Console.WriteLine("Parking Spot not Found");
-                return null;
+                throw new KeyNotFoundException($"Parking spot with ID {spotId} not found on level {levelId}.");
             }
+
             return spot;
         }
 
@@ -128,12 +121,7 @@ namespace C_.Services
         /// <returns>A list of tuples containing the <see cref="ParkingLevel"/> and the available <see cref="ParkingSpot"/>.</returns>
         public List<(ParkingLevel Level, ParkingSpot Spot)> GetAvailableSpots(Guid lotId, VehicleType type)
         {
-            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
-            if (lot == null)
-            {
-                Console.WriteLine("Parking lot not found!");
-                return new List<(ParkingLevel, ParkingSpot)>();
-            }
+            var lot = GetParkingLotById(lotId);
 
             var availableSpots = lot.Levels
                 .SelectMany(level => level.AvailableSpots.Values  // read only from AvailableSpots
@@ -151,12 +139,7 @@ namespace C_.Services
         /// <param name="lotId">The ID of the parking lot to display.</param>
         public void DisplayLotStatus(Guid lotId)
         {
-            var lot = _parkingLots.FirstOrDefault(l => l.LotId == lotId);
-            if(lot == null)
-            {
-                Console.WriteLine("Not Lot Found");
-                return;
-            }
+            var lot = GetParkingLotById(lotId);
             Console.WriteLine("\n===== PARKING LOT STATUS =====");
             Console.WriteLine(lot);
             foreach (var level in lot.Levels)
