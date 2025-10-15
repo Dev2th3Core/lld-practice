@@ -39,8 +39,7 @@ namespace C_.Services
             var vehicle = _vehicles.FirstOrDefault(v => v.VehicleId == vehicleId);
             if (vehicle is null)
             {
-                Console.WriteLine("Vehicle lot not found!");
-                return null;
+                throw new KeyNotFoundException($"Vehicle with ID {vehicleId} not found.");
             }
             return vehicle;
         }

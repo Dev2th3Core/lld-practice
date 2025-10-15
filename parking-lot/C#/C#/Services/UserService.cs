@@ -35,10 +35,9 @@ namespace C_.Services
         public User GetUserById(Guid userId)
         {
             var user = _users.FirstOrDefault(u => u.UserId == userId);
-            if(user is null)
+            if (user is null)
             {
-                Console.WriteLine("User not found!");
-                return null;
+                throw new KeyNotFoundException($"User with ID {userId} not found.");
             }
             return user;
         }
@@ -77,13 +76,7 @@ namespace C_.Services
         /// <returns>The added <see cref="Vehicle"/> if the user is found; otherwise, null.</returns>
         public Vehicle AddVehicleToUser(Guid userId, Vehicle vehicle)
         {
-            var user = GetUserById(userId);
-            if (user == null)
-            {
-                Console.WriteLine("User lot not found!");
-                return null;
-            }
-
+            var user = GetUserById(userId); // Throws if not found
             user.Vehicles.Add(vehicle);
             Console.WriteLine($"Vehicle {vehicle.LicensePlate} added to {user.Name}");
             return vehicle;

@@ -32,12 +32,7 @@ namespace C_.Services
         /// <returns>A <see cref="Reservation"/> object if a spot is successfully reserved; otherwise, null.</returns>
         public Reservation AutoAssignNearestSpot(Guid lotId, Guid vehicleId, VehicleType type, Entrance entrance)
         {
-            var lot = _parkingLotService.GetParkingLotById(lotId);
-            if (lot == null)
-            {
-                Console.WriteLine("Invalid parking lot!");
-                return null;
-            }
+            var lot = _parkingLotService.GetParkingLotById(lotId); // This will now throw an exception if not found
 
             // Take a snapshot of all available spots
             var availableSpots = lot.Levels
@@ -73,7 +68,7 @@ namespace C_.Services
                 // else, another thread reserved it first, try next spot
             }
 
-            Console.WriteLine("❌ No available spots found!");
+            Console.WriteLine("No available spots found!");
             return null;
         }
 
@@ -83,21 +78,15 @@ namespace C_.Services
         /// <param name="reservation">The reservation to be ended.</param>
         public void FreeSpot(Reservation reservation)
         {
-            var lot = _parkingLotService.GetParkingLotById(reservation.LotId);
-            if (lot == null)
-            {
-                Console.WriteLine("Invalid parking lot!");
-                return;
-            }
+            var lot = _parkingLotService.GetParkingLotById(reservation.LotId); // Throws if not found
 
             // Find the spot
-            var spot = lot.Levels.SelectMany(l => l.Spots)
-                .FirstOrDefault(s => s.SpotId == reservation.SpotId);
+            var spot = _parkingLotService.GetSpotById(reservation.LotId, reservation.LevelId, reservation.SpotId);
 
             if (spot == null)
             {
-                Console.WriteLine("Spot not found!");
-                return;
+                // This case should ideally not happen if the reservation is valid, but it's good practice.
+                throw new InvalidOperationException($"Spot {reservation.SpotId} from reservation could not be found.");
             }
 
             // Mark the spot as available
@@ -107,10 +96,7 @@ namespace C_.Services
             var level = lot.Levels.First(l => l.LevelId == spot.LevelId);
 
             // Thread-safe addition if using ConcurrentDictionary
-            if (!level.AvailableSpots.ContainsKey(spot.SpotId))
-            {
-                level.AvailableSpots.TryAdd(spot.SpotId, spot);
-            }
+            level.AvailableSpots.TryAdd(spot.SpotId, spot);
 
             // Remove reservation from active reservations
             _reservations.Remove(reservation);
