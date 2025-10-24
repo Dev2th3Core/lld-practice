@@ -1,4 +1,5 @@
 ﻿using C_.Enum;
+using C_.Factory;
 using C_.Models;
 
 namespace C_.Services
@@ -9,6 +10,12 @@ namespace C_.Services
     class VehicleService
     {
         private readonly List<Vehicle> _vehicles = new();
+        private readonly IVehicleFactory _vehicleFacotry;
+
+        public VehicleService(IVehicleFactory vehicleFacotry)
+        {
+            _vehicleFacotry = vehicleFacotry;
+        }
 
         /// <summary>
         /// Adds a new vehicle to the system.
@@ -18,11 +25,7 @@ namespace C_.Services
         /// <returns>The newly created <see cref="Vehicle"/>.</returns>
         public Vehicle AddVehicle(VehicleType vehicleType, string licensePlate)
         {
-            var vehicle = new Vehicle
-            {
-                Type = vehicleType,
-                LicensePlate = licensePlate
-            };
+            var vehicle = _vehicleFacotry.CreateVehicle(vehicleType, licensePlate);
 
             _vehicles.Add(vehicle);
             Console.WriteLine($"Vehicle created: {vehicle.Type} (ID: {vehicle.VehicleId}, License: {vehicle.LicensePlate})");

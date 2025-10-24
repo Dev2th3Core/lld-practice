@@ -1,4 +1,5 @@
 ﻿using C_.Enum;
+using C_.Factory;
 using C_.Models;
 using C_.Services;
 
@@ -18,7 +19,8 @@ namespace C_
             try
             {
                 var userService = new UserService();
-                var vehicleService = new VehicleService();
+                IVehicleFactory vehicleFactory = new VehicleFactory();
+                var vehicleService = new VehicleService(vehicleFactory);
 
                 var user1 = userService.AddUser("Alice");
                 var vehicle1 = vehicleService.AddVehicle(VehicleType.BIKE, "ABC123");
